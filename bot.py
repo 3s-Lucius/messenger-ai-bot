@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-VERIFY_TOKEN = "abc"
+VERIFY_TOKEN = "3sbot"
 PAGE_ACCESS_TOKEN = os.environ.get("EAAMpHdEsTpoBQYSeZCLhz0fQ8z7YQEA5sdswienq5TtV6tdhlZCG1bW7RJyjZBCQypunWNDSc20aMfJe8l5kfHw1dc7FZBcEsHTbNM8NkAf4JRqNUx4NMpPPpg75U2ZA5t9LRDPX8cBpldKjnB1ZAyUkUtvBRnjTnWK96NYY8TdEQptPNAdV2zQVXlffCNZCNlsy3SvjGV7XHYRqGwYPhNyEytgKXw0osflHnjVLwZDZD") or "DÁN_PAGE_TOKEN_VÀO_ĐÂY"
 
 @app.route("/")
