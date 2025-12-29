@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 VERIFY_TOKEN = "abc"
-PAGE_ACCESS_TOKEN = "EAAMpHdEsTpoBQYSeZCLhz0fQ8z7YQEA5sdswienq5TtV6tdhlZCG1bW7RJyjZBCQypunWNDSc20aMfJe8l5kfHw1dc7FZBcEsHTbNM8NkAf4JRqNUx4NMpPPpg75U2ZA5t9LRDPX8cBpldKjnB1ZAyUkUtvBRnjTnWK96NYY8TdEQptPNAdV2zQVXlffCNZCNlsy3SvjGV7XHYRqGwYPhNyEytgKXw0osflHnjVLwZDZD"
+PAGE_ACCESS_TOKEN = os.environ.get("EAAMpHdEsTpoBQYSeZCLhz0fQ8z7YQEA5sdswienq5TtV6tdhlZCG1bW7RJyjZBCQypunWNDSc20aMfJe8l5kfHw1dc7FZBcEsHTbNM8NkAf4JRqNUx4NMpPPpg75U2ZA5t9LRDPX8cBpldKjnB1ZAyUkUtvBRnjTnWK96NYY8TdEQptPNAdV2zQVXlffCNZCNlsy3SvjGV7XHYRqGwYPhNyEytgKXw0osflHnjVLwZDZD") or "DÁN_PAGE_TOKEN_VÀO_ĐÂY"
 
 @app.route("/")
 def home():
@@ -21,13 +21,20 @@ def webhook():
         return "Sai token", 403
 
     data = request.get_json()
+    print("EVENT:", data)  # 👈 LOG QUAN TRỌNG
+
     for entry in data.get("entry", []):
         for event in entry.get("messaging", []):
-            if "message" in event:
-                sender_id = event["sender"]["id"]
-                text = event["message"].get("text")
-                if text:
-                    send_message(sender_id, f"Bạn vừa nói: {text}")
+            sender_id = event.get("sender", {}).get("id")
+
+            # BỎ QUA echo
+            if event.get("message", {}).get("is_echo"):
+                continue
+
+            text = event.get("message", {}).get("text")
+            if sender_id and text:
+                send_message(sender_id, f"🤖 Bot nhận được: {text}")
+
     return "ok", 200
 
 def send_message(psid, text):
@@ -37,7 +44,9 @@ def send_message(psid, text):
         "recipient": {"id": psid},
         "message": {"text": text}
     }
-    requests.post(url, params=params, json=payload)
+
+    r = requests.post(url, params=params, json=payload)
+    print("SEND RESULT:", r.text)  # 👈 LOG QUAN TRỌNG
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
